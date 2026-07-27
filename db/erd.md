@@ -2,13 +2,14 @@
 
 ```mermaid
 erDiagram
-    COUNTERPARTIES ||--o{ TRADES : "executes"
-    INSTRUMENTS    ||--o{ TRADES : "covers"
-    TRADES         ||--o{ SETTLEMENTS : "settles via"
-    TRADES         ||--o{ RECON_BREAKS : "may produce"
-    RECON_JOBS     ||--o{ RECON_BREAKS : "detected by"
-    USERS          ||--o{ AUDIT_LOG : "actor"
-    TRADES         ||--o{ AUDIT_LOG : "audited"
+   COUNTERPARTIES ||--o{ TRADES : "executes"
+INSTRUMENTS ||--o{ TRADES : "covers"
+TRADES ||--o{ SETTLEMENTS : "settles via"
+TRADES ||--o{ RECON_BREAKS : "may produce"
+RECON_JOBS ||--o{ RECON_BREAKS : "detected by"
+USERS ||--o{ RECON_JOBS : "triggers"
+USERS ||--o{ AUDIT_LOG : "actor"
+TRADES ||--o{ AUDIT_LOG : "audited"
 
     COUNTERPARTIES {
         bigint id PK
@@ -61,17 +62,19 @@ erDiagram
         varchar resolution_note
     }
 
-    RECON_JOBS {
-        bigint id PK
-        varchar job_id UK
-        date from_date
-        date to_date
-        varchar status
-        timestamp started_at
-        timestamp finished_at
-        int trades_processed
-        int breaks_detected
-    }
+       RECON_JOBS {
+    bigint id PK
+    bigint user_id FK
+    varchar job_id UK
+    date from_date
+    date to_date
+    varchar status
+    timestamp started_at
+    timestamp finished_at
+    int trades_processed
+    int breaks_detected
+}
+   
 
     AUDIT_LOG {
         bigint id PK
