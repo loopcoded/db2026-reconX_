@@ -31,41 +31,76 @@ WHERE t.deleted_at IS NULL
 
 
 -- ============================================================================
--- TICKET-ADV011 — Recursive CTE: trade lifecycle (execution -> settlement
---                -> recon_break -> resolution)
+-- TICKET-ADV011 — Recursive CTE: Trade Lifecycle Rollup
 -- ============================================================================
+
 WITH RECURSIVE trade_lifecycle AS (
-    -- anchor: every trade in its execution state
+
+    -- Anchor: every trade begins in EXECUTION
     SELECT
-        t.id           AS trade_id,
+        t.id AS trade_id,
         t.trade_ref,
-        1              AS step,
-        'EXECUTED'     AS state,
-        t.created_at   AS at_ts,
-        NULL::text     AS detail
+        1 AS stage,
+        'EXECUTION' AS stage_name,
+        t.created_at AS event_at,
+        'SUCCESS'::text AS event_status
+
     FROM trades t
     WHERE t.deleted_at IS NULL
 
     UNION ALL
 
-    -- recursive: each subsequent state derived from the previous step
+    -- Recursive step
     SELECT
         tl.trade_id,
         tl.trade_ref,
-        tl.step + 1,
-        CASE tl.step
+        tl.stage + 1,
+
+        CASE tl.stage
+            WHEN 1 THEN 'CONFIRMATION'
+            WHEN 2 THEN 'SETTLEMENT'
+            WHEN 3 THEN 'RECON_BREAK'
+            WHEN 4 THEN 'RESOLUTION'
+        END AS stage_name,
+
+        CASE tl.stage
+            WHEN 1 THEN t.created_at
+            WHEN 2 THEN s.settlement_date::timestamp
+            WHEN 3 THEN rb.created_at
+            WHEN 4 THEN rb.resolved_at
+        END AS event_at,
+
+        CASE tl.stage
             WHEN 1 THEN 'CONFIRMED'
-            WHEN 2 THEN 'SETTLED'
-            WHEN 3 THEN 'RECONCILED'
-        END                                          AS state,
-        s.settlement_date::timestamp                  AS at_ts,
-        s.status                                      AS detail
+            WHEN 2 THEN s.status
+            WHEN 3 THEN rb.status
+            WHEN 4 THEN 'RESOLVED'
+        END AS event_status
+
     FROM trade_lifecycle tl
-    JOIN settlements s ON s.trade_id = tl.trade_id
-    WHERE tl.step < 4
+
+    JOIN trades t
+        ON t.id = tl.trade_id
+
+    LEFT JOIN settlements s
+        ON s.trade_id = tl.trade_id
+
+    LEFT JOIN recon_breaks rb
+        ON rb.trade_id = tl.trade_id
+
+    WHERE tl.stage < 5
 )
-SELECT * FROM trade_lifecycle
-ORDER BY trade_id, step;
+
+SELECT
+    trade_id,
+    trade_ref,
+    stage,
+    stage_name,
+    event_at,
+    event_status
+
+FROM trade_lifecycle
+ORDER BY trade_id, stage;
 
 
 -- ============================================================================
