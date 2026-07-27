@@ -34,6 +34,10 @@ CREATE TABLE trades_y2026m06 PARTITION OF trades
 CREATE TABLE trades_y2026m07 PARTITION OF trades
     FOR VALUES FROM ('2026-07-01') TO ('2026-08-01');
 
+CREATE TABLE trades_default
+PARTITION OF trades
+DEFAULT;
+
 -- 4. Migrate data
 INSERT INTO trades SELECT * FROM trades_legacy;
 
