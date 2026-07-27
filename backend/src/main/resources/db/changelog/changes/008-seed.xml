@@ -74,4 +74,44 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="008-seed-generated-trades" author="Pranshult25" context="dev,test">
+        <sql splitStatements="false"><![CDATA[
+            INSERT INTO instruments (symbol, name, asset_class, currency, isin, metadata)
+            SELECT
+                'GEN' || LPAD(g::TEXT, 4, '0'),
+                'Generated Instrument ' || g,
+                (ARRAY['EQUITY','FIXED_INCOME','FX','COMMODITY','DERIVATIVE'])[1 + (g % 5)],
+                (ARRAY['USD','EUR','GBP','JPY','CHF'])[1 + (g % 5)],
+                NULL,
+                jsonb_build_object('seq', g, 'auto', true)
+            FROM generate_series(16, 50) AS g;
+
+            INSERT INTO trades (trade_ref, instrument_id, counterparty_id, quantity, price, trade_date, status)
+            SELECT
+                'TRD-2026-' || LPAD(n::TEXT, 6, '0'),
+                1 + (n % 50),
+                1 + (n % 10),
+                ROUND((random() * 10000 + 1)::NUMERIC, 4),
+                ROUND((random() * 500 + 1)::NUMERIC, 4),
+                DATE '2026-04-01' + (n % 120) * INTERVAL '1 day',
+                (ARRAY['PENDING','MATCHED','UNMATCHED','DISPUTED','MATCHED','MATCHED'])[1 + (n % 6)]
+            FROM generate_series(1, 500) AS n;
+
+            INSERT INTO recon_breaks (trade_id, discrepancy_type, status)
+            SELECT id,
+                   (ARRAY['PRICE_MISMATCH','QUANTITY_MISMATCH','DATE_MISMATCH'])[1 + (id % 3)],
+                   'OPEN'
+            FROM trades
+            WHERE status IN ('UNMATCHED','DISPUTED')
+            LIMIT 30;
+        ]]></sql>
+        <rollback>
+            <sql splitStatements="false"><![CDATA[
+                DELETE FROM recon_breaks;
+                DELETE FROM trades;
+                DELETE FROM instruments WHERE symbol LIKE 'GEN%';
+            ]]></sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
