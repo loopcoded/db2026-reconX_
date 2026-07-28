@@ -62,11 +62,11 @@ public Money notional() {
 
     @Override public boolean equals(Object o) {
         // TODO(TICKET-ADV028): pattern-match on FXTrade and compare tradeRef.
-        throw new UnsupportedOperationException("TICKET-ADV028");
+         return (o instanceof FXTrade other) && tradeRef.equals(other.tradeRef);
     }
     @Override public int hashCode() {
         // TODO(TICKET-ADV028): hash from tradeRef.
-        throw new UnsupportedOperationException("TICKET-ADV028");
+         return tradeRef.hashCode();
     }
 
     @Override public String toString() {
