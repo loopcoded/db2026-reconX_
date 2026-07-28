@@ -65,23 +65,22 @@ public Money notional() {
     public long counterpartyId()     { return counterpartyId; }
 
     /** equals: two EquityTrades are equal iff their tradeRef is equal. */
-   @Override
-public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof EquityTrade other)) return false;
-    return tradeRef.equals(other.tradeRef);
-}
-
-@Override
-public int hashCode() {
-    return Objects.hash(tradeRef);
-}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EquityTrade other)) return false;
+        return tradeRef.equals(other.tradeRef);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(tradeRef);
+    }
 
     @Override
     public String toString() {
-        // TODO(TICKET-ADV030): "EquityTrade[ref=..., symbol=..., qty=..., price=... CCY, side=...]"
-        //                     — must NOT leak counterparty PII.
-        throw new UnsupportedOperationException("TICKET-ADV030");
+        return "EquityTrade[ref=%s, symbol=%s, qty=%s, price=%s %s, side=%s]"
+                .formatted(tradeRef, instrumentSymbol, quantity, price, currency.getCurrencyCode(), side);
     }
 
     /** Fluent builder. Required fields validated in {@link #build()}. */
@@ -106,23 +105,23 @@ public int hashCode() {
         public Builder counterpartyId(long v)         { this.counterpartyId = v;  return this; }
 
        public EquityTrade build() {
-    Objects.requireNonNull(tradeRef, "tradeRef");
-    Objects.requireNonNull(instrumentSymbol, "instrumentSymbol");
-    Objects.requireNonNull(quantity, "quantity");
-    Objects.requireNonNull(price, "price");
-    Objects.requireNonNull(currency, "currency");
-    Objects.requireNonNull(side, "side");
-    Objects.requireNonNull(tradeDate, "tradeDate");
-
-    if (quantity.signum() <= 0) {
-        throw new IllegalStateException("quantity must be > 0");
-    }
-
-    if (price.signum() <= 0) {
-        throw new IllegalStateException("price must be > 0");
-    }
-
-    return new EquityTrade(this);
-}
+            Objects.requireNonNull(tradeRef, "tradeRef");
+            Objects.requireNonNull(instrumentSymbol, "instrumentSymbol");
+            Objects.requireNonNull(quantity, "quantity");
+            Objects.requireNonNull(price, "price");
+            Objects.requireNonNull(currency, "currency");
+            Objects.requireNonNull(side, "side");
+            Objects.requireNonNull(tradeDate, "tradeDate");
+        
+            if (quantity.signum() <= 0) {
+                throw new IllegalStateException("quantity must be > 0");
+            }
+        
+            if (price.signum() <= 0) {
+                throw new IllegalStateException("price must be > 0");
+            }
+        
+            return new EquityTrade(this);
+        }
     }
 }

@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  ============================================================================
  TICKET-ADV009 — JSONB column on instruments (+ GIN index on Postgres)
@@ -12,8 +12,6 @@
           ->> 'sector' lookup hits idx_instruments_metadata_gin.
  ============================================================================
 -->
-<?xml version="1.0" encoding="UTF-8"?>
-
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
