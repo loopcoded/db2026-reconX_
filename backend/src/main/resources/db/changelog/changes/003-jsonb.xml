@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  ============================================================================
  TICKET-ADV009 — JSONB column on instruments (+ GIN index on Postgres)
