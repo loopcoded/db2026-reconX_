@@ -86,22 +86,11 @@ public class TradeController {
 
     }
 
-@PatchMapping("/{id}/status")
-@Operation(summary = "Update only the status field")
-public TradeResponse updateStatus(@PathVariable Long id,
-                                  @RequestBody Map<String, String> body,
-                                  @AuthenticationPrincipal Object principal) {
-    String status = body.get("status");
-    return mapper.toResponse(service.updateStatus(id, status, String.valueOf(principal)));
-}
-
- 
-
-@DeleteMapping("/{id}")
-@Operation(summary = "Soft delete (sets deleted_at)")
-public ResponseEntity<Void> delete(@PathVariable Long id,
-                                   @AuthenticationPrincipal Object principal) {
-    service.softDelete(id, String.valueOf(principal));
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Soft delete (sets deleted_at)")
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                       @AuthenticationPrincipal Object principal) {
+        // TODO(TICKET-ADV067): service.softDelete(id, actor); return 204 No Content.
     return ResponseEntity.noContent().build();
-}
+    }
 }

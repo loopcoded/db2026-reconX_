@@ -115,6 +115,7 @@ public class TradeService {
         return saved;
     }
 
+
     public void softDelete(Long id, String actor) {
         var t = tradeRepo.findById(id)
                 .orElseThrow(() -> new TradeNotFoundException("id " + id));
