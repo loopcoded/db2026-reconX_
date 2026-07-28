@@ -47,6 +47,19 @@ public class TradeController {
     }
 
     @GetMapping
+    public PagedResponse<TradeResponse> list(
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+        @RequestParam(required = false) TradeStatus status,
+        @RequestParam(required = false) Long counterpartyId,
+        @PageableDefault(size = 20, sort = "tradeDate", direction = Sort.Direction.DESC)
+        Pageable pageable
+    ) {
+        var page = queryService.search(from, to, status, counterpartyId, pageable);
+        return PagedResponse.of(page, mapper::toResponse);
+    }
+
+    @GetMapping
     @Operation(summary = "List trades — paginated, filterable, sortable")
     public PagedResponse<TradeResponse> list(
             @RequestParam(required = false) LocalDate from,
