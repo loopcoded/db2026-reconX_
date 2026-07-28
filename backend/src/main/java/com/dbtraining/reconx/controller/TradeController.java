@@ -80,21 +80,22 @@ public class TradeController {
         throw new UnsupportedOperationException("TICKET-ADV065");
     }
 
-    @PatchMapping("/{id}/status")
-    @Operation(summary = "Update only the status field")
-    public TradeResponse updateStatus(@PathVariable Long id,
-                                      @RequestBody Map<String, String> body,
-                                      @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV066): read body.get("status") and call
-        //   service.updateStatus(id, status, actor). Return mapper.toResponse(saved).
-        throw new UnsupportedOperationException("TICKET-ADV066");
-    }
+@PatchMapping("/{id}/status")
+@Operation(summary = "Update only the status field")
+public TradeResponse updateStatus(@PathVariable Long id,
+                                  @RequestBody Map<String, String> body,
+                                  @AuthenticationPrincipal Object principal) {
+    String status = body.get("status");
+    return mapper.toResponse(service.updateStatus(id, status, String.valueOf(principal)));
+}
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Soft delete (sets deleted_at)")
-    public ResponseEntity<Void> delete(@PathVariable Long id,
-                                       @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV067): service.softDelete(id, actor); return 204 No Content.
-        throw new UnsupportedOperationException("TICKET-ADV067");
-    }
+ 
+
+@DeleteMapping("/{id}")
+@Operation(summary = "Soft delete (sets deleted_at)")
+public ResponseEntity<Void> delete(@PathVariable Long id,
+                                   @AuthenticationPrincipal Object principal) {
+    service.softDelete(id, String.valueOf(principal));
+    return ResponseEntity.noContent().build();
+}
 }
