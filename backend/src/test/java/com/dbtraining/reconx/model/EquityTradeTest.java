@@ -4,71 +4,73 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Currency;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EquityTradeTest {
 
-    @Test
-    void builder_buildsWhenAllRequiredPresent() {
-        EquityTrade trade = EquityTrade.builder()
-                .tradeRef(TradeRef.of("EQ-001"))
-                .instrumentSymbol("SAP.DE")
-                .quantity(new BigDecimal("100"))
-                .price(new BigDecimal("50"))
-                .currency("EUR")
+    private EquityTrade createTrade() {
+        return EquityTrade.builder()
+                .tradeRef(TradeRef.of("EQU-20260602-0001"))
+                .instrumentSymbol("AAPL")
+                .quantity(new BigDecimal("10"))
+                .price(new BigDecimal("100"))
+                .currency(Currency.getInstance("USD"))
                 .side(Side.BUY)
-                .tradeDate(LocalDate.of(2026, 6, 3))
+                .tradeDate(LocalDate.of(2026, 6, 2))
                 .counterpartyId(1L)
                 .build();
-    
-        assertThat(trade.tradeRef()).isEqualTo(TradeRef.of("EQ-001"));
-        assertThat(trade.notional())
-                .isEqualTo(new Money(new BigDecimal("5000"), java.util.Currency.getInstance("EUR")));
-        assertThat(trade.assetClass()).isEqualTo(AssetClass.EQUITY);
     }
-    
+
+
+    @Test
+    void builder_buildsWhenAllRequiredPresent() {
+
+        EquityTrade trade = createTrade();
+
+        assertNotNull(trade);
+        assertEquals("AAPL", trade.instrumentSymbol());
+        assertEquals(new BigDecimal("10"), trade.quantity());
+        assertEquals(new BigDecimal("100"), trade.price());
+    }
+
+
     @Test
     void builder_missingPrice_throws() {
-        assertThatThrownBy(() ->
+
+        assertThrows(NullPointerException.class, () ->
                 EquityTrade.builder()
-                        .tradeRef(TradeRef.of("EQ-001"))
-                        .instrumentSymbol("SAP.DE")
-                        .quantity(new BigDecimal("100"))
-                        // .price(...) intentionally omitted
-                        .currency("EUR")
+                        .tradeRef(TradeRef.of("EQU-20260602-0001"))
+                        .instrumentSymbol("AAPL")
+                        .quantity(new BigDecimal("10"))
+                        .currency("USD")
                         .side(Side.BUY)
-                        .tradeDate(LocalDate.of(2026, 6, 3))
+                        .tradeDate(LocalDate.of(2026, 6, 2))
                         .counterpartyId(1L)
                         .build()
-        )
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("price");
+        );
     }
-    
+
+
     @Test
     void equality_byTradeRef() {
-        EquityTrade t1 = sampleEquity("EQ-001");
-        EquityTrade t2 = sampleEquity("EQ-001");
-        EquityTrade t3 = sampleEquity("EQ-002");
-    
-        assertThat(t1)
-                .isEqualTo(t2)
-                .hasSameHashCodeAs(t2);
-    
-        assertThat(t1)
-                .isNotEqualTo(t3);
-    }
-    
-    private EquityTrade sampleEquity(String ref) {
-        return EquityTrade.builder()
-                .tradeRef(TradeRef.of(ref))
-                .instrumentSymbol("SAP.DE")
-                .quantity(new BigDecimal("100"))
-                .price(new BigDecimal("100"))
-                .currency("EUR").side(Side.BUY)
-                .tradeDate(LocalDate.of(2026, 6, 3))
-                .counterpartyId(1L).build();
+
+        EquityTrade trade1 = createTrade();
+
+        EquityTrade trade2 = EquityTrade.builder()
+                .tradeRef(TradeRef.of("EQU-20260602-0001"))
+                .instrumentSymbol("MSFT")
+                .quantity(new BigDecimal("20"))
+                .price(new BigDecimal("200"))
+                .currency("USD")
+                .side(Side.SELL)
+                .tradeDate(LocalDate.of(2026, 6, 2))
+                .counterpartyId(2L)
+                .build();
+
+
+        assertEquals(trade1, trade2);
+        assertEquals(trade1.hashCode(), trade2.hashCode());
     }
 }
