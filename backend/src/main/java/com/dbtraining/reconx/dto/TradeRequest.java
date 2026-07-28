@@ -42,4 +42,10 @@ public record TradeRequest(
 
         @NotNull
         LocalDate tradeDate
+
+        @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal quantity,
+
+        @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal price,
+        
+        @NotNull @PastOrPresent LocalDate tradeDate
 ) {}
