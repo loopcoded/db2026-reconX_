@@ -1,6 +1,6 @@
 package com.dbtraining.reconx.service;
 
-import com.dbtraining.reconx.model.ReconResult;
+import com.dbtraining.reconx.dto.ReconResult;
 import com.dbtraining.reconx.model.Trade;
 import com.dbtraining.reconx.repository.ReconResultRepository;
 import org.junit.jupiter.api.Test;
