@@ -35,7 +35,7 @@ import java.sql.Statement;
  *        converts it to DOWN with the exception class as a detail.
  * ============================================================================
  */
-@Component("database")
+@Component("reconxDatabase")
 public class DatabaseHealthIndicator extends AbstractHealthIndicator {
 
     private final DataSource ds;
