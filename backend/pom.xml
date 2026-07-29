@@ -29,7 +29,7 @@
     <groupId>com.dbtraining</groupId>
     <artifactId>reconx</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>reconx</name>
     <description>ReconX — Enterprise Trade Reconciliation Platform (Advanced Track)</description>
 
@@ -201,6 +201,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                     <mainClass>com.dbtraining.reconx.ReconxApplication</mainClass>
+                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
