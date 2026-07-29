@@ -25,6 +25,13 @@
   --color-surface: #2a2a2a;
   --color-border:  #3a3a3a;
 }
+/* File: static-dashboard/css/style.css — theme overrides */
+[data-theme="dark"] {
+  --color-bg:      #1a1a1a;
+  --color-text:    #f5f5f5;
+  --color-surface: #2a2a2a;
+  --color-border:  #3a3a3a;
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
