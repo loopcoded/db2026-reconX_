@@ -1,6 +1,6 @@
 // TICKET-ADV120 — useMemo for portfolio-value calc.
 // TICKET-ADV116 — useTradeStream live feed.
-import React from 'react';
+import React, { Profiler } from 'react';
 import { withAuth } from '@components/withAuth.jsx';
 import { useTradeStream } from '@hooks/useTradeStream.js';
 
@@ -13,7 +13,12 @@ function StatCard({ label, value }) {
   );
 }
 
-function Dashboard() {
+function onRender(id, phase, actualDuration, baseDuration) {
+  // eslint-disable-next-line no-console
+  console.log(`[Profiler] ${id} ${phase}  actual=${actualDuration.toFixed(2)}ms  base=${baseDuration.toFixed(2)}ms`);
+}
+
+function DashboardContents() {
   const { trades, isConnected } = useTradeStream();
 
   // TODO(TICKET-ADV120): use useMemo to compute `portfolioValue` =
@@ -34,6 +39,14 @@ function Dashboard() {
         SSE: {isConnected ? 'connected' : 'disconnected'}
       </div>
     </section>
+  );
+}
+
+function Dashboard() {
+  return (
+    <Profiler id="TradeDashboard" onRender={onRender}>
+      <DashboardContents />
+    </Profiler>
   );
 }
 
