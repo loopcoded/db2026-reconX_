@@ -58,6 +58,9 @@ public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRun
         // TODO(TICKET-ADV070): load the ReconBreak, call rb.resolve(note), save,
         //   and return 200 with the updated entity. Throw TradeNotFoundException
         //   when the id is unknown.
-        throw new UnsupportedOperationException("TICKET-ADV070");
+    ReconBreak rb = breaks.findById(id)
+            .orElseThrow(() -> new TradeNotFoundException("recon_break " + id));
+    rb.resolve(body.getOrDefault("note", "manually resolved"));
+    return ResponseEntity.ok(breaks.save(rb));
     }
 }
