@@ -31,12 +31,10 @@ export const api = {
     throw new Error('TICKET-ADV123 not implemented');
   },
   updateStatus: (id, status) => {
-    // TODO(TICKET-ADV119): PATCH /v1/trades/{id}/status with { status }.
-    throw new Error('TICKET-ADV119 not implemented');
+    return request('PATCH', `/v1/trades/${id}/status`, { status });
   },
   deleteTrade: (id)          => {
-    // TODO(TICKET-ADV119): DELETE /v1/trades/{id}.
-    throw new Error('TICKET-ADV119 not implemented');
+    return request('DELETE', `/v1/trades/${id}`);
   },
   runRecon: (req)            => {
     // TODO(TICKET-ADV121): POST /v1/recon/run to enqueue a recon job.
