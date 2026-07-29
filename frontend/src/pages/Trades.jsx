@@ -16,11 +16,21 @@ function Trades() {
 
   const handleSelect = useCallback((id) => setSelectedId(id), []);
 
-  // TODO(TICKET-ADV114 + ADV117): useEffect that:
-  //   - builds a query string from `page` and `debounced` (status filter)
-  //   - calls api.listTrades(params) and stores the response in `data`
-  //   - re-runs whenever `page` or `debounced` changes
-  //   - degrades gracefully on error (set empty page).
+  React.useEffect(() => {
+    let active = true;
+    const params = new URLSearchParams({ page: page.toString(), size: '20' });
+    if (debounced) params.append('status', debounced);
+    
+    api.listTrades(params)
+      .then(res => {
+        if (active) setData(res);
+      })
+      .catch(() => {
+        if (active) setData({ items: [], totalPages: 0 });
+      });
+    
+    return () => { active = false; };
+  }, [page, debounced]);
 
   return (
     <section>
