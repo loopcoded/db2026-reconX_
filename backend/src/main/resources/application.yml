@@ -10,7 +10,10 @@
 # OBSERVE: Boot the app with `-Dspring-boot.run.profiles=dev` — H2 is used,
 #          Liquibase runs, sample users are seeded.
 # =============================================================================
+
 spring:
+  jmx:
+    enabled: true
   application:
     name: reconx
   profiles:
@@ -113,3 +116,4 @@ springdoc:
     operationsSorter: alpha
   api-docs:
     path: /v3/api-docs
+
