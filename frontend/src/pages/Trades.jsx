@@ -12,11 +12,21 @@ function Trades() {
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
 
-  // TODO(TICKET-ADV114 + ADV117): useEffect that:
-  //   - builds a query string from `page` and `debounced` (status filter)
-  //   - calls api.listTrades(params) and stores the response in `data`
-  //   - re-runs whenever `page` or `debounced` changes
-  //   - degrades gracefully on error (set empty page).
+  React.useEffect(() => {
+    let active = true;
+    const params = new URLSearchParams({ page: page.toString(), size: '20' });
+    if (debounced) params.append('status', debounced);
+    
+    api.listTrades(params)
+      .then(res => {
+        if (active) setData(res);
+      })
+      .catch(() => {
+        if (active) setData({ items: [], totalPages: 0 });
+      });
+    
+    return () => { active = false; };
+  }, [page, debounced]);
 
   return (
     <section>
@@ -35,8 +45,18 @@ function Trades() {
           { key: 'price',    label: 'Price' },
           { key: 'status',   label: 'Status' },
         ]} />
-        {/* TODO(TICKET-ADV114): render a DataTable.Body with `rows={data.items}`
-            and a `render` prop that returns one <span> per column. */}
+        <DataTable.Body 
+          rows={data.items}
+          render={(row) => (
+            <React.Fragment>
+              <span>{row.tradeRef}</span>
+              <span>{row.instrument?.symbol || row.symbol}</span>
+              <span>{row.quantity}</span>
+              <span>{row.price}</span>
+              <span>{row.status}</span>
+            </React.Fragment>
+          )} 
+        />
         <DataTable.Pagination
           page={page}
           totalPages={Math.max(1, data.totalPages)}
