@@ -1,4 +1,36 @@
-# TICKET-ADV093 / ADV094 — Prometheus alert rules
+# # TICKET-ADV093 / ADV094 — Prometheus alert rules
+# groups:
+#   - name: reconx-business
+#     rules:
+#       - alert: TooManyReconBreaks
+#         expr: recon_break_count > 50
+#         for: 5m
+#         labels:
+#           severity: warning
+#         annotations:
+#           summary: "Open recon breaks > 50 for 5 min"
+#           description: "Current breaks: {{ $value }}"
+
+#       - alert: HighApiLatencyP95
+#         expr: |
+#           histogram_quantile(0.95,
+#             sum(rate(http_server_requests_seconds_bucket[5m])) by (le, uri)
+#           ) > 0.5
+#         for: 3m
+#         labels:
+#           severity: warning
+#         annotations:
+#           summary: "P95 request latency > 500ms for 3 min on {{ $labels.uri }}"
+
+#       - alert: KafkaDlqGrowing
+#         expr: increase(kafka_consumer_records_consumed_total{topic="trade-events-dlq"}[5m]) > 0
+#         for: 1m
+#         labels:
+#           severity: critical
+#         annotations:
+#           summary: "Messages landing in trade-events-dlq"
+
+# TICKET-ADV093 / TICKET-ADV094 — Prometheus alert rules
 groups:
   - name: reconx-business
     rules:
@@ -11,7 +43,8 @@ groups:
           summary: "Open recon breaks > 50 for 5 min"
           description: "Current breaks: {{ $value }}"
 
-      - alert: HighApiLatencyP95
+
+          - alert: HighApiLatencyP95
         expr: |
           histogram_quantile(0.95,
             sum(rate(http_server_requests_seconds_bucket[5m])) by (le, uri)
@@ -21,11 +54,3 @@ groups:
           severity: warning
         annotations:
           summary: "P95 request latency > 500ms for 3 min on {{ $labels.uri }}"
-
-      - alert: KafkaDlqGrowing
-        expr: increase(kafka_consumer_records_consumed_total{topic="trade-events-dlq"}[5m]) > 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Messages landing in trade-events-dlq"

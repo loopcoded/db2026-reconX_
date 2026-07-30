@@ -48,7 +48,7 @@ public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRun
         // TODO(TICKET-ADV069): once recon_jobs + recon_breaks tables are wired,
         //   return breaks.findByJobId(jobId). Day-0 returns an empty list so
         //   the React breaks-table renders "no breaks" gracefully.
-        return Collections.emptyList();
+        return breaks.findAll();
     }
 
     @PutMapping("/results/{id}/resolve")
@@ -58,6 +58,9 @@ public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRun
         // TODO(TICKET-ADV070): load the ReconBreak, call rb.resolve(note), save,
         //   and return 200 with the updated entity. Throw TradeNotFoundException
         //   when the id is unknown.
-        throw new UnsupportedOperationException("TICKET-ADV070");
+    ReconBreak rb = breaks.findById(id)
+            .orElseThrow(() -> new TradeNotFoundException("recon_break " + id));
+    rb.resolve(body.getOrDefault("note", "manually resolved"));
+    return ResponseEntity.ok(breaks.save(rb));
     }
 }

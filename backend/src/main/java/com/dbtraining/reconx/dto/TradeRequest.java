@@ -34,18 +34,15 @@ public record TradeRequest(
         @Pattern(regexp = "^(BUY|SELL)$")
         String side,
 
-        @NotNull @Positive
+        @NotNull
+        @DecimalMin(value = "0.0", inclusive = false)
         BigDecimal quantity,
 
-        @NotNull @PositiveOrZero
+        @NotNull
+        @DecimalMin(value = "0.0", inclusive = false)
         BigDecimal price,
 
         @NotNull
+        @PastOrPresent
         LocalDate tradeDate
-
-        @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal quantity,
-
-        @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal price,
-        
-        @NotNull @PastOrPresent LocalDate tradeDate
 ) {}
