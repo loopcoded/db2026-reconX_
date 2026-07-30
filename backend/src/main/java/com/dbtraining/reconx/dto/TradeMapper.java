@@ -1,6 +1,6 @@
 package com.dbtraining.reconx.dto;
 
-import com.dbtraining.reconx.domain.Trade;
+import com.dbtraining.reconx.repository.entity.Trade;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",

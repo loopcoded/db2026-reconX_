@@ -1,7 +1,5 @@
 package com.dbtraining.reconx.repository;
-
-import com.dbtraining.reconx.domain.Trade;
-import com.dbtraining.reconx.domain.TradeStatus;
+import com.dbtraining.reconx.repository.entity.Trade;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -19,7 +17,7 @@ public final class TradeSpecification {
         };
     }
 
-    public static Specification<Trade> hasStatus(TradeStatus status) {
+    public static Specification<Trade> hasStatus(String status) {
         return (root, q, cb) -> status == null
             ? cb.conjunction()
             : cb.equal(root.get("status"), status);
