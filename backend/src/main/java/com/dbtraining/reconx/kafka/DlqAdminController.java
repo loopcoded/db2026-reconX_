@@ -2,7 +2,7 @@ package com.dbtraining.reconx.controller;
 
 import com.dbtraining.reconx.kafka.TradeEventProducer;
 import com.dbtraining.reconx.repository.DlqMessageRepository;
-import com.dbtraining.reconx.model.DlqMessage;
+import com.dbtraining.reconx.repository.entity.DlqMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
