@@ -1,7 +1,6 @@
 package com.dbtraining.reconx.repository;
 
-import com.dbtraining.reconx.domain.Trade;
-import com.dbtraining.reconx.domain.TradeStatus;
+import com.dbtraining.reconx.repository.entity.Trade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,27 +12,24 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface TradeRepository
-        extends JpaRepository<Trade, Long>, JpaSpecificationExecutor<Trade> {
+        extends JpaRepository<Trade, Long>,
+                JpaSpecificationExecutor<Trade> {
 
     Optional<Trade> findByTradeRef(String tradeRef);
-
 
     @Query("""
         SELECT t FROM Trade t
         WHERE t.tradeDate BETWEEN :from AND :to
           AND (:status IS NULL OR t.status = :status)
-          AND (:counterpartyId IS NULL OR t.status = :counterpartyId)
+          AND (:counterpartyId IS NULL OR t.counterparty.id = :counterpartyId)
         """)
     Page<Trade> findByFilters(
-        @Param("from") LocalDate from,
-        @Param("to") LocalDate to,
-        @Param("status") TradeStatus status,
-        @Param("counterpartyId") Long counterpartyId,
-        Pageable pageable
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            @Param("status") String status,
+            @Param("counterpartyId") Long counterpartyId,
+            Pageable pageable
     );
 
-
-    // TICKET-ADV092
-    // Current number of trades for each status
     long countByStatus(String status);
 }
