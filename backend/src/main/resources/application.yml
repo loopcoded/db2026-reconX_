@@ -50,13 +50,16 @@ spring:
         spring.json.add.type.headers: false
     consumer:
       group-id: reconx-service
-      auto-offset-reset: earliest
+      auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.dbtraining.reconx.dto
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.dbtraining.reconx.dto.TradeEvent
+        max.poll.interval.ms: 300000
+    listener:
+      concurrency: 3
 
 server:
   port: 8080
