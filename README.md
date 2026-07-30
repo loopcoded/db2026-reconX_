@@ -3,6 +3,15 @@
 > Deutsche Bank — TDI 2026 Graduate Technical Training Programme
 > **Advanced Track (Intermediate-Hybrid)** | 10-Day Case Study | Version 1.0
 
+## Team
+
+- **TDI 2026 Graduate Training Group**
+- Aarsh (Lead), Mona (Backend), Priyansh (Frontend), and Pranshul (DevOps/CI)
+
+Read our [Retrospective](docs/retrospective.md) for learnings and technical notes.
+
+---
+
 This repository is the **starter scaffold** for the ReconX case study. Each day
 of the programme adds another layer to the system. By Day 10 you and your team
 will have built, dockerised, tested, and monitored a near-production-grade
