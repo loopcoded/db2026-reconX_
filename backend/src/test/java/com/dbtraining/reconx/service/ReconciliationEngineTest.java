@@ -2,6 +2,8 @@ package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.dto.ReconResult;
 import com.dbtraining.reconx.model.*;
+import com.dbtraining.reconx.observability.ReconMetrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -15,7 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ReconciliationEngineTest {
 
-    private final ReconciliationEngine engine = new ReconciliationEngine();
+    private final ReconciliationEngine engine = new ReconciliationEngine(
+            new ReconMetrics(new SimpleMeterRegistry())
+    );
 
     @Test
     void testReconcile_exactMatch_returnsMatched() {
