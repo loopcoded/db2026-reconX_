@@ -39,8 +39,6 @@ public class DlqAdminController {
             ));
         }
 
-        // TODO: deserialize payload back into TradeEvent
-        return ResponseEntity.ok().build();
         repo.delete(msg);
 
         return ResponseEntity.ok(Map.of(
@@ -48,5 +46,5 @@ public class DlqAdminController {
                 "eventId", eventId,
                 "topic", msg.getOriginalTopic()
         ));
-    }
+            }
 }

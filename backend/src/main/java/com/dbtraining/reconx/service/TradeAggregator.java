@@ -19,7 +19,7 @@ public class TradeAggregator {
     }
 
     public Optional<JsonNode> rebuild(String tradeRef) {
-        List<AuditLogEntry> events = auditRepo.findByTradeRefOrderByOccurredAtAsc(tradeRef);
+        List<AuditLogEntry> events = auditRepo.findByTradeRefOrderByEventTimestampAsc(tradeRef);
         if (events.isEmpty()) {
             return Optional.empty();
         }
