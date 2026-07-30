@@ -1,9 +1,0 @@
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\controller\TradeControllerWebMvcTest.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\integration\TradeLifecycleIT.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\kafka\DlqRoutingIT.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\kafka\KafkaPipelineIT.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\model\EquityTradeTest.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\model\ReconciliationRuleTest.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationEngineTest.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationIntegrationTest.java
-C:\DB_Training\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationServiceTest.java
