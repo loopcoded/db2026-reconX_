@@ -24,13 +24,9 @@ public class DlqConsumer {
         this.repo = repo;
     }
 
-    @KafkaListener(
-            topics = "trade-events-dlq",
-            groupId = "dlq-monitor",
-            containerFactory = "tradeEventListenerContainerFactory"
-    )
+    @KafkaListener(topics = "trade-events-dlq", groupId = "dlq-db-group")
     public void onDlqMessage(ConsumerRecord<String, TradeEvent> record,
-                             @Header(KafkaHeaders.EXCEPTION_MESSAGE) String exMsg) {
+                             @Header(value = KafkaHeaders.EXCEPTION_MESSAGE, required = false) String exMsg) {
         TradeEvent event = record.value();
         log.error("DLQ: trade={} eventId={} reason={}",
                 event.tradeRef(), event.eventId(), exMsg);
