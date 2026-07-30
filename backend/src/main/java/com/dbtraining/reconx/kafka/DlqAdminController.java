@@ -39,7 +39,8 @@ public class DlqAdminController {
             ));
         }
 
-        producer.publish(msg.getPayload());
+        // TODO: deserialize payload back into TradeEvent
+        return ResponseEntity.ok().build();
         repo.delete(msg);
 
         return ResponseEntity.ok(Map.of(

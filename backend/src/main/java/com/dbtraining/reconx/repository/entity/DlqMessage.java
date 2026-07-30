@@ -28,7 +28,13 @@ public class DlqMessage {
         this.payload = payload;
         this.error = error;
     }
-
+        private Integer partition;
+    
+    public Builder partition(Integer partition) {
+        this.partition = partition;
+        return this;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -48,4 +54,8 @@ public class DlqMessage {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
+    public Integer getPartition() {
+       return partition;
+    } 
 }
