@@ -1,5 +1,5 @@
 # =============================================================================
-# TICKET-ADV049 — uat profile: PostgreSQL on docker-compose
+# uat profile: PostgreSQL on docker-compose
 # =============================================================================
 spring:
   datasource:
