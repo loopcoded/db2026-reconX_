@@ -42,4 +42,4 @@ public class TradeAggregator {
         }
         return Optional.ofNullable(state);
     }
-}
+}

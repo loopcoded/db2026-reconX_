@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface AuditLogRepository extends JpaRepository<AuditLogEntry, Long> {
     List<AuditLogEntry> findByTradeRefOrderByEventTimestampAsc(String tradeRef);
-    List<AuditLogEntry> findByTradeRefOrderByOccurredAtAsc(String tradeRef);
 }
