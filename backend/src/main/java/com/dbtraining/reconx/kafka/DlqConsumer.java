@@ -2,7 +2,7 @@ package com.dbtraining.reconx.kafka;
 
 import com.dbtraining.reconx.dto.TradeEvent;
 import com.dbtraining.reconx.repository.DlqMessageRepository;
-import com.dbtraining.reconx.model.DlqMessage;
+import com.dbtraining.reconx.repository.entity.DlqMessage;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
