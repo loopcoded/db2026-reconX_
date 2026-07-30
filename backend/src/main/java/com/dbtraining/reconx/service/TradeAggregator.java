@@ -1,9 +1,10 @@
 package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.dto.TradeEvent;
-import com.dbtraining.reconx.model.AuditLogEntry;
+import com.dbtraining.reconx.repository.entity.AuditLogEntry;
 import com.dbtraining.reconx.repository.AuditLogRepository;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +14,15 @@ import java.util.Optional;
 public class TradeAggregator {
 
     private final AuditLogRepository auditRepo;
+    private final ObjectMapper objectMapper;
 
-    public TradeAggregator(AuditLogRepository auditRepo) {
+    public TradeAggregator(AuditLogRepository auditRepo, ObjectMapper objectMapper) {
         this.auditRepo = auditRepo;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<JsonNode> rebuild(String tradeRef) {
-        List<AuditLogEntry> events = auditRepo.findByTradeRefOrderByOccurredAtAsc(tradeRef);
+        List<AuditLogEntry> events = auditRepo.findByTradeRefOrderByEventTimestampAsc(tradeRef);
         if (events.isEmpty()) {
             return Optional.empty();
         }
@@ -27,7 +30,13 @@ public class TradeAggregator {
         JsonNode state = null;
         for (AuditLogEntry e : events) {
             switch (TradeEvent.EventType.valueOf(e.getOperation())) {
-                case TRADE_CREATED, TRADE_UPDATED -> state = e.getAfterData();
+                case TRADE_CREATED, TRADE_UPDATED -> {
+                    try {
+                        state = objectMapper.readTree(e.getAfterData());
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Failed to parse afterData JSON", ex);
+                    }
+                }
                 case TRADE_CANCELLED              -> state = null;
             }
         }
