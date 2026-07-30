@@ -1,12 +1,12 @@
-package com.dbtraining.reconx.controller;
-
+package com.dbtraining.reconx.kafka;
+import com.dbtraining.reconx.dto.TradeEvent;
 import com.dbtraining.reconx.kafka.TradeEventProducer;
 import com.dbtraining.reconx.repository.DlqMessageRepository;
 import com.dbtraining.reconx.repository.entity.DlqMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,10 +17,17 @@ public class DlqAdminController {
 
     private final DlqMessageRepository repo;
     private final TradeEventProducer producer;
+    private final ObjectMapper objectMapper;
 
-    public DlqAdminController(DlqMessageRepository repo, TradeEventProducer producer) {
+
+    public DlqAdminController(
+            DlqMessageRepository repo,
+            TradeEventProducer producer,
+            ObjectMapper objectMapper) {
+    
         this.repo = repo;
         this.producer = producer;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/replay")

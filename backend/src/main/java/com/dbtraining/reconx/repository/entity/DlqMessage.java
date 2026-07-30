@@ -29,6 +29,9 @@ public class DlqMessage {
     @Column(columnDefinition = "TEXT")
     private String payload;
 
+    @Column(name="partition_id")
+    private Integer partition;
+
     @Column(columnDefinition = "TEXT")
     private String reason;
 
@@ -57,6 +60,10 @@ public class DlqMessage {
         return originalTopic;
     }
 
+    public Integer getPartition() {
+        return partition;
+    }
+    
     public Integer getPartition() {
         return partition;
     }
