@@ -18,7 +18,7 @@ public class TradeLookupService {
 
     public Counterparty counterpartyForTradeRef(String tradeRef) {
         return tradeRepo.findByTradeRef(tradeRef)
-                .map(Trade::counterpartyId)
+                .map(t -> t.getCounterparty().getId())
                 .flatMap(cpRepo::findById)
                 .orElseThrow(() -> new NoSuchElementException(
                         "No counterparty resolvable for trade " + tradeRef));
