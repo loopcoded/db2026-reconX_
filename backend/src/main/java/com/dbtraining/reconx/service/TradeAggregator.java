@@ -1,7 +1,7 @@
 package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.dto.TradeEvent;
-import com.dbtraining.reconx.model.AuditLogEntry;
+import com.dbtraining.reconx.repository.entity.AuditLogEntry;
 import com.dbtraining.reconx.repository.AuditLogRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
