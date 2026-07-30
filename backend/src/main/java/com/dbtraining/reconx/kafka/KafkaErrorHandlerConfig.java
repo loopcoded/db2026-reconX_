@@ -21,7 +21,7 @@ import org.springframework.util.backoff.ExponentialBackOff;
 public class KafkaErrorHandlerConfig {
 
     @Bean
-    public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
+    public DefaultErrorHandler errorHandler(KafkaTemplate<?, ?> template) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template,
                 (ConsumerRecord<?, ?> rec, Exception ex) ->
