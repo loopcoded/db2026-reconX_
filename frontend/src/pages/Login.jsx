@@ -1,44 +1,79 @@
 // TICKET-ADV072 — Login page exchanging email/password for a JWT.
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext.jsx';
 import { api } from '@services/apiService.js';
 
 export default function Login() {
-  const { login: _login } = useAuth();
-  const _navigate = useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('admin@db.com');
   const [password, setPassword] = useState('admin123');
-  const [error, _setError] = useState(null);
-  
-  // To avoid unused var warnings for api:
-  void api;
-  void _login;
-  void _navigate;
-  void _setError;
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
-    // TODO(TICKET-ADV072):
-    //   1. call api.login(email, password) — it returns { token, role }.
-    //   2. on success: call login(token, role) from AuthContext, then
-    //      navigate('/').
-    //   3. on failure: setError(err.message) so the alert div renders.
+
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await api.login(email, password);
+
+      const { token, role } = response;
+
+      if (!token) {
+        throw new Error('Invalid login response: missing token');
+      }
+
+      login(token, role);
+
+      navigate('/');
+
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <form onSubmit={submit} className="login-form">
       <h2>Sign in</h2>
+
       <label>
         Email
-        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          required
+        />
       </label>
+
       <label>
         Password
-        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required />
+        <input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          required
+        />
       </label>
-      {error && <div role="alert" className="form-error">{error}</div>}
-      <button type="submit">Sign in</button>
+
+      {error && (
+        <div role="alert" className="form-error">
+          {error}
+        </div>
+      )}
+
+      <button type="submit" disabled={loading}>
+        {loading ? 'Signing in...' : 'Sign in'}
+      </button>
+
     </form>
   );
 }
