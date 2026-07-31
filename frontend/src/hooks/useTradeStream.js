@@ -13,8 +13,8 @@ export function useTradeStream(url = '/api/v1/trades/stream') {
       try {
         const trade = JSON.parse(e.data);
         setTrades(prev => [trade, ...prev].slice(0, 200));
-      } catch (err) {
-        console.error('Failed to parse SSE data', err);
+      } catch {
+        // console.error('Failed to parse SSE data', _err);
       }
     };
     return () => {

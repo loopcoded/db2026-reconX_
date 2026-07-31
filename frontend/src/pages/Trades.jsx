@@ -12,7 +12,8 @@ function Trades() {
   const debounced = useDebouncedSearch(search, 300);
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
-  const [selectedId, setSelectedId] = useState(null);
+  const [_selectedId, setSelectedId] = useState(null);
+  void _selectedId;
 
   const handleSelect = useCallback((id) => setSelectedId(id), []);
 

@@ -21,7 +21,7 @@ import org.springframework.util.backoff.ExponentialBackOff;
 public class KafkaErrorHandlerConfig {
 
     @Bean
-    public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
+    public DefaultErrorHandler errorHandler(KafkaTemplate<?, ?> template) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template,
                 (ConsumerRecord<?, ?> rec, Exception ex) ->
@@ -30,7 +30,7 @@ public class KafkaErrorHandlerConfig {
 
         // Retry after 1s, then 2s, then 4s, then send to DLQ
         ExponentialBackOff backoff = new ExponentialBackOff(1000L, 2.0);
-        backoff.setMaxAttempts(3);
+        backoff.setMaxElapsedTime(8000L);
 
         return new DefaultErrorHandler(recoverer, backoff);
     }

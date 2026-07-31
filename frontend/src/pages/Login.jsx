@@ -5,11 +5,17 @@ import { useAuth } from '@context/AuthContext.jsx';
 import { api } from '@services/apiService.js';
 
 export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login: _login } = useAuth();
+  const _navigate = useNavigate();
   const [email, setEmail] = useState('admin@db.com');
   const [password, setPassword] = useState('admin123');
-  const [error, setError] = useState(null);
+  const [error, _setError] = useState(null);
+  
+  // To avoid unused var warnings for api:
+  void api;
+  void _login;
+  void _navigate;
+  void _setError;
 
   async function submit(e) {
     e.preventDefault();

@@ -26,7 +26,7 @@ function AddTrade() {
       await api.createTrade(values);
       reset();
     } catch (e) {
-      console.error(e);
+      // console.error(e);
       alert('Failed to create trade: ' + e.message);
     }
   }

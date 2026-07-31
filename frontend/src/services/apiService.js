@@ -22,7 +22,7 @@ async function request(method, path, body) {
 }
 
 export const api = {
-  login: (email, password)   => {
+  login: (_email, _password)   => {
     // TODO(TICKET-ADV072): POST /auth/login with { email, password }.
     throw new Error('TICKET-ADV072 not implemented');
   },
@@ -30,7 +30,7 @@ export const api = {
     // We will just use standard fetch or assuming request works
     return request('GET', `/v1/trades?${params}`);
   },
-  createTrade: (req)         => {
+  createTrade: (_req)         => {
     // TODO(TICKET-ADV123): POST /v1/trades with the form payload.
     throw new Error('TICKET-ADV123 not implemented');
   },
@@ -40,15 +40,15 @@ export const api = {
   deleteTrade: (id)          => {
     return request('DELETE', `/v1/trades/${id}`);
   },
-  runRecon: (req)            => {
+  runRecon: (_req)            => {
     // TODO(TICKET-ADV121): POST /v1/recon/run to enqueue a recon job.
     throw new Error('TICKET-ADV121 not implemented');
   },
-  reconResults: (jobId)      => {
+  reconResults: (_jobId)      => {
     // TODO(TICKET-ADV121): GET /v1/recon/jobs/{jobId}/results.
     throw new Error('TICKET-ADV121 not implemented');
   },
-  audit: (tradeRef)          => {
+  audit: (_tradeRef)          => {
     // TODO(TICKET-ADV121): GET /v1/audit/trades/{tradeRef}.
     throw new Error('TICKET-ADV121 not implemented');
   },
