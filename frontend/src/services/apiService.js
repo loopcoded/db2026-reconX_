@@ -2,7 +2,7 @@
 const BASE = '/api';
 
 function authHeaders() {
-  const token = localStorage.getItem('jwt');
+  const token = sessionStorage.getItem('reconx-token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -16,23 +16,28 @@ async function request(method, path, body) {
     body: body ? JSON.stringify(body) : undefined
   });
   
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      sessionStorage.removeItem('reconx-token');
+      sessionStorage.removeItem('reconx-role');
+      window.location.href = '/login';
+    }
+    throw new Error(`HTTP ${res.status}`);
+  }
   if (res.status === 204) return null;
   return await res.json();
 }
 
 export const api = {
-  login: (_email, _password)   => {
-    // TODO(TICKET-ADV072): POST /auth/login with { email, password }.
-    throw new Error('TICKET-ADV072 not implemented');
+  login: (email, password)   => {
+    return request('POST', '/auth/login', { email, password });
   },
   listTrades: (params = '')  => {
     // We will just use standard fetch or assuming request works
     return request('GET', `/v1/trades?${params}`);
   },
-  createTrade: (_req)         => {
-    // TODO(TICKET-ADV123): POST /v1/trades with the form payload.
-    throw new Error('TICKET-ADV123 not implemented');
+  createTrade: (req)         => {
+    return request('POST', '/v1/trades', req);
   },
   updateStatus: (id, status) => {
     return request('PATCH', `/v1/trades/${id}/status`, { status });

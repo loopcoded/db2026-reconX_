@@ -23,7 +23,14 @@ function AddTrade() {
 
   async function onSubmit(values) {
     try {
-      await api.createTrade(values);
+      // Convert Date object to yyyy-MM-dd string for backend LocalDate
+      const payload = {
+        ...values,
+        tradeDate: values.tradeDate instanceof Date
+          ? values.tradeDate.toISOString().split('T')[0]
+          : values.tradeDate,
+      };
+      await api.createTrade(payload);
       reset();
     } catch (e) {
       // console.error(e);

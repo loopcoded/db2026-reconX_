@@ -20,12 +20,22 @@ spring:
   jpa:
     properties:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      properties:
+        max.block.ms: 500
     listener:
       missing-topics-fatal: false   # don't blow up if Kafka isn't running locally
 
 logging:
   level:
     com.dbtraining.reconx: DEBUG
+
+management:
+  health:
+    kafka:
+      enabled: false   # Kafka is optional in dev; don't report health as DOWN
