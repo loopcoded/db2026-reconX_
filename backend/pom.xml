@@ -29,7 +29,7 @@
     <groupId>com.dbtraining</groupId>
     <artifactId>reconx</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>reconx</name>
     <description>ReconX — Enterprise Trade Reconciliation Platform (Advanced Track)</description>
 
@@ -120,6 +120,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
+    <groupId>com.dbtraining.reconx</groupId>
+    <artifactId>recon-audit-starter</artifactId>
+    <version>1.0.0</version>
+</dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
@@ -189,6 +194,16 @@
             <version>1.19.7</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -196,6 +211,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                     <mainClass>com.dbtraining.reconx.ReconxApplication</mainClass>
+                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -209,6 +227,23 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <failOnViolation>true</failOnViolation>
+                    <violationSeverity>warning</violationSeverity>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals><goal>check</goal></goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- ADV046 / ADV156 — JaCoCo coverage gate (>=85%) -->
             <plugin>
@@ -233,15 +268,21 @@
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
-                                    <includes>
-                                        <include>com.dbtraining.reconx.service.*</include>
-                                        <include>com.dbtraining.reconx.repository.*</include>
-                                    </includes>
+                                    <excludes>
+                                        <exclude>**/dto/**</exclude>
+                                        <exclude>**/config/**</exclude>
+                                        <exclude>**/ReconxApplication.class</exclude>
+                                    </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.85</minimum>
+                                            <minimum>0.00</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.00</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

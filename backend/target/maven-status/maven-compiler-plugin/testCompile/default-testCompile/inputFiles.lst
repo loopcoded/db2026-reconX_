@@ -1,0 +1,9 @@
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\controller\TradeControllerWebMvcTest.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\integration\TradeLifecycleIT.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\kafka\DlqRoutingIT.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\kafka\KafkaPipelineIT.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\model\EquityTradeTest.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\model\ReconciliationRuleTest.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationEngineTest.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationIntegrationTest.java
+C:\Users\Admin\db2026-reconX_\backend\src\test\java\com\dbtraining\reconx\service\ReconciliationServiceTest.java

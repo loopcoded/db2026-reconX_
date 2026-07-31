@@ -36,6 +36,11 @@ public class AuditLogEntry {
     @Column(name = "before_state", columnDefinition = "TEXT")
     private String beforeState;
 
+    private String operation;
+
+    @Column(columnDefinition = "TEXT")
+    private String afterData;
+
     @Column(name = "after_state", columnDefinition = "TEXT")
     private String afterState;
 
@@ -60,4 +65,11 @@ public class AuditLogEntry {
     public String getActor()         { return actor; }
     public String getBeforeState()   { return beforeState; }
     public String getAfterState()    { return afterState; }
+    public String getOperation() {
+        return operation;
+    }
+    
+    public String getAfterData() {
+        return afterData;
+    }
 }
