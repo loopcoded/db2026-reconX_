@@ -11,19 +11,16 @@ export default function Login() {
   const [password, setPassword] = useState('admin123');
   const [error, _setError] = useState(null);
   
-  // To avoid unused var warnings for api:
-  void api;
-  void _login;
-  void _navigate;
-  void _setError;
-
   async function submit(e) {
     e.preventDefault();
-    // TODO(TICKET-ADV072):
-    //   1. call api.login(email, password) — it returns { token, role }.
-    //   2. on success: call login(token, role) from AuthContext, then
-    //      navigate('/').
-    //   3. on failure: setError(err.message) so the alert div renders.
+    try {
+      _setError(null);
+      const { token, role } = await api.login(email, password);
+      _login(token, role);
+      _navigate('/');
+    } catch (err) {
+      _setError(err.message || 'Login failed');
+    }
   }
 
   return (

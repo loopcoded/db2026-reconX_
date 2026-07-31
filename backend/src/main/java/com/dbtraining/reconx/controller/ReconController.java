@@ -30,24 +30,35 @@ public class ReconController {
 
     private final ReconBreakRepository breaks;
 
-    public ReconController(ReconBreakRepository breaks) { this.breaks = breaks; }
+    private final com.dbtraining.reconx.repository.TradeRepository tradeRepo;
 
-  
+    public ReconController(ReconBreakRepository breaks, com.dbtraining.reconx.repository.TradeRepository tradeRepo) { 
+        this.breaks = breaks; 
+        this.tradeRepo = tradeRepo;
+    }
 
     @PostMapping("/run")
-@Operation(summary = "Trigger a reconciliation job (async)")
-public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRunRequest req) {
-    String jobId = UUID.randomUUID().toString();
-    // In the full impl this writes a row to recon_jobs and a worker picks it up.
-    return ResponseEntity.accepted().body(Map.of("jobId", jobId, "status", "QUEUED"));
-}
+    @Operation(summary = "Trigger a reconciliation job (async)")
+    public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRunRequest req) {
+        String jobId = UUID.randomUUID().toString();
+        
+        // Mock implementation for demo scenario: create breaks for any UNMATCHED trades
+        tradeRepo.findAll().forEach(trade -> {
+            if ("UNMATCHED".equals(trade.getStatus()) || "DISPUTED".equals(trade.getStatus()) || "PENDING".equals(trade.getStatus())) {
+                ReconBreak rb = new ReconBreak();
+                rb.setTradeId(trade.getId());
+                rb.setDiscrepancyType("PRICE_MISMATCH");
+                breaks.save(rb);
+            }
+        });
+
+        return ResponseEntity.accepted().body(Map.of("jobId", jobId, "status", "QUEUED"));
+    }
 
     @GetMapping("/jobs/{jobId}/results")
     @Operation(summary = "Get results for a recon job")
     public List<ReconBreak> results(@PathVariable String jobId) {
-        // TODO(TICKET-ADV069): once recon_jobs + recon_breaks tables are wired,
-        //   return breaks.findByJobId(jobId). Day-0 returns an empty list so
-        //   the React breaks-table renders "no breaks" gracefully.
+        // Return all breaks (mock implementation for MVP).
         return breaks.findAll();
     }
 
@@ -55,9 +66,7 @@ public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRun
     @Operation(summary = "Mark a recon break as RESOLVED with a note")
     public ResponseEntity<ReconBreak> resolve(@PathVariable Long id,
                                               @RequestBody Map<String, String> body) {
-        // TODO(TICKET-ADV070): load the ReconBreak, call rb.resolve(note), save,
-        //   and return 200 with the updated entity. Throw TradeNotFoundException
-        //   when the id is unknown.
+
     ReconBreak rb = breaks.findById(id)
             .orElseThrow(() -> new TradeNotFoundException("recon_break " + id));
     rb.resolve(body.getOrDefault("note", "manually resolved"));

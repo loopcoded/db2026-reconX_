@@ -37,9 +37,9 @@ public class AuthController {
     @Operation(summary = "Exchange email + password for a JWT")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest req) {
         AppUser u = users.findByEmail(req.email())
-                .orElseThrow(() -> new InvalidTradeException("Invalid credentials"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Invalid credentials"));
         if (!u.getEnabled() || !encoder.matches(req.password(), u.getPasswordHash())) {
-            throw new InvalidTradeException("Invalid credentials");
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
         String token = jwt.generate(u.getEmail(), u.getRole());
         return ResponseEntity.ok(new LoginResponse(token, "Bearer", jwt.expirationSeconds(), u.getRole()));

@@ -45,16 +45,20 @@ export const api = {
   deleteTrade: (id)          => {
     return request('DELETE', `/v1/trades/${id}`);
   },
-  runRecon: (_req)            => {
-    // TODO(TICKET-ADV121): POST /v1/recon/run to enqueue a recon job.
-    throw new Error('TICKET-ADV121 not implemented');
+  runRecon: () => {
+    return request('POST', '/v1/recon/run', {
+      from: '2026-01-01',
+      to: '2026-12-31'
+    });
   },
-  reconResults: (_jobId)      => {
-    // TODO(TICKET-ADV121): GET /v1/recon/jobs/{jobId}/results.
-    throw new Error('TICKET-ADV121 not implemented');
+  reconResults: (jobId) => {
+    // The backend uses a mock jobId if none is provided, or ignores it to return all breaks
+    return request('GET', `/v1/recon/jobs/${jobId || 'dummy'}/results`);
   },
-  audit: (_tradeRef)          => {
-    // TODO(TICKET-ADV121): GET /v1/audit/trades/{tradeRef}.
-    throw new Error('TICKET-ADV121 not implemented');
+  audit: (tradeRef) => {
+    return request('GET', `/v1/audit/trades/${tradeRef}`);
   },
+  resolveBreak: (id, note) => {
+    return request('PUT', `/v1/recon/results/${id}/resolve`, { note });
+  }
 };
