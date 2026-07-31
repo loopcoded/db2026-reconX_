@@ -1,151 +1,121 @@
-# ReconX — Enterprise Trade Reconciliation Platform (Student Starter)
+# ReconX — Enterprise Trade Reconciliation Platform
 
-> Deutsche Bank — TDI 2026 Graduate Technical Training Programme
-> **Advanced Track (Intermediate-Hybrid)** | 10-Day Case Study | Version 1.0
+ReconX is a near-production-grade trade reconciliation platform designed to help Operations teams detect and resolve mismatches between internal trade records and external counterparty/custodian feeds. This system relies on a high-throughput event streaming backend, an interactive dashboard, and extensive observability metrics to ensure accurate and timely reconciliation of trades.
 
-This repository is the **starter scaffold** for the ReconX case study. Each day
-of the programme adds another layer to the system. By Day 10 you and your team
-will have built, dockerised, tested, and monitored a near-production-grade
-trade reconciliation platform with Kafka event streaming, JWT-backed RBAC, a
-React 19 dashboard, and a CI/CD pipeline that ships Docker images to GHCR.
-
----
-
-## What you will build
-
-A near-production-grade trade reconciliation platform used (in concept) by an
-Ops team to detect and resolve mismatches between internal trade records and
-external counterparty/custodian feeds — built across 10 days, 165 tickets.
-
-```
-       ┌──────────┐        ┌──────────────────────────┐        ┌────────────┐
-       │  React   │  HTTPS │  Spring Boot REST API    │  JDBC  │ PostgreSQL │
-       │ Frontend │ ─────▶ │  recon-service (Java 25) │ ─────▶ │  (Liqui-   │
-       │  + Vite  │        │  + Spring Security/JWT   │        │   base     │
-       └────┬─────┘        │  + Actuator/Micrometer   │        │   migs)    │
-            │              └────────┬─────────────────┘        └─────┬──────┘
-            │ SSE                   │  KafkaTemplate / @KafkaListener│
-            │                       ▼                                ▼
-            │              ┌──────────────────┐               ┌────────────┐
-            └──────────────│  Apache Kafka    │               │ recon_*    │
-                           │  trade-events    │               │ audit_log  │
-                           │  recon-results   │               │ mat. views │
-                           │  system-alerts   │               └────────────┘
-                           │  + DLQ topics    │
-                           └────────┬─────────┘
-                                    ▼
-                           ┌─────────────────────────┐
-                           │ ReconConsumer (auto-rec)│
-                           │ AuditConsumer (history) │
-                           │ AlertConsumer  (notify) │
-                           └─────────────────────────┘
-
-  /actuator/prometheus ─▶ Prometheus (scrape) ─▶ Grafana dashboards + alerts
-```
-
----
-
-## Repository layout
-
-```
-reconx-studentCopy/
-├── db/                            ← Day 1: standalone SQL assets
-│   ├── queries.sql                ← Analytical queries (window fns, CTEs, JSONB)
-│   ├── partitioning.sql           ← Monthly trade partitions
-│   └── erd.md                     ← Mermaid ER diagram
-│
-│   NOTE: Liquibase changelogs live on the JVM classpath at
-│         backend/src/main/resources/db/changelog/ — not here.
-│
-├── backend/                       ← Days 2-6, 9: Java 25 + Spring Boot 3 + Kafka
-│   ├── pom.xml
-│   ├── Dockerfile
-│   └── src/main/java/com/dbtraining/reconx/
-│       ├── ReconxApplication.java
-│       ├── model/                 ← Day 2-3: sealed TradeType hierarchy, value objects
-│       ├── repository/            ← Day 4-5: Spring Data JPA + Specifications
-│       ├── service/               ← Day 3-6: reconciliation engine, analytics
-│       ├── controller/            ← Day 5: REST API endpoints
-│       ├── dto/                   ← Request/response DTOs, TradeEvent, MapStruct mappers
-│       ├── exception/             ← Custom hierarchy + @RestControllerAdvice
-│       ├── config/                ← Swagger, JPA, Liquibase, Cache, Kafka config
-│       ├── security/              ← Day 5: JWT filter, RBAC
-│       ├── kafka/                 ← Day 9: producers, consumers, DLQ
-│       └── observability/         ← Day 6: custom Micrometer metrics
-│
-├── static-dashboard/              ← Day 7: vanilla HTML/CSS/JS (pre-React exercise)
-│   ├── dashboard.html
-│   ├── trades.html
-│   ├── recon.html
-│   ├── css/style.css
-│   └── js/*.js
-│
-├── frontend/                      ← Day 8-9: React 19 + Vite recon-ui
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── Dockerfile
-│   └── src/
-│       ├── App.jsx
-│       ├── components/            ← DataTable (compound), TradeRow, StatCard, …
-│       ├── hooks/                 ← useWebSocket, useTradeStream, useDebouncedSearch
-│       ├── context/               ← ThemeProvider, AuthProvider
-│       ├── services/              ← apiService.js
-│       └── pages/                 ← Dashboard, Trades, Login, AddTrade
-│
-├── monitoring/                    ← Day 6 + 10: Prometheus / Grafana
-│   ├── prometheus/prometheus.yml
-│   └── grafana/provisioning/
-│
-├── .github/workflows/ci.yml       ← Day 10: GitHub Actions pipeline
-├── docker-compose.yml             ← Day 10: 7-service stack
-├── .env.example                   ← Sample environment variables
-└── student-guides/                ← What you read each day
-```
-
-The full per-day walkthrough lives in
-[`./student-guides/`](./student-guides/README.md).
-**Read [`student-guides/day0/README.md`](./student-guides/day0/README.md)
-before you start.**
-
----
-
-## Prerequisites
-
-- **Java 25** (Temurin recommended — the Advanced Track uses sealed classes, records, virtual threads where they fit)
-- **Maven 3.9+**
-- **Node.js 20+** and npm
-- **Docker Desktop** (allocate ≥ 6 GB RAM — Kafka + Postgres + Prometheus + Grafana is heavier than Intermediate)
-- **PostgreSQL 16** client tools (or use the bundled Docker container)
-- **Git**
-- IDE: IntelliJ IDEA Ultimate (backend) + VS Code (frontend) recommended
-
----
-
-## Quick start (after Day 4)
+## Quick start (3 commands, < 60 s on a warm laptop)
 
 ```bash
-# 1. Bring up infrastructure (Postgres + Kafka + Prometheus + Grafana + Kafdrop)
-docker compose up -d postgres kafka zookeeper prometheus grafana kafdrop
+echo $GHCR_PAT | docker login ghcr.io -u <user> --password-stdin
+docker compose pull
+docker compose up -d
+```
+Open http://localhost:5173 — login as `trader@db.com / trader123`.
 
-# 2. Run the backend (Liquibase runs migrations automatically on startup)
-cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+## Table of contents
+- [Architecture](#architecture) — mermaid runtime + CI/CD diagrams
+- [Tech stack](#tech-stack) — Java 25, Spring Boot 3, Kafka, Postgres, React, Vite
+- [API documentation](#api-documentation) — Swagger UI at /swagger-ui.html
+- [Monitoring](#monitoring) — Prometheus scrape, Grafana dashboards (screenshots)
+- [Kafka topics](#kafka-topics) — trade-events, recon-results, system-alerts, DLQ
+- [Load test results](#load-test-results) — k6 200 VUs, p95 latency, throughput
+- [CI/CD pipeline](#cicd-pipeline) — lint → test → coverage 85% → docker → GHCR
+- [Deploy runbook](#deploy-runbook) — exactly 3 commands
+- [Default credentials](#default-credentials) — dev profile only
+- [Troubleshooting](#troubleshooting) — port conflicts, GHCR auth, Kafka listener
+- [Team](#team) — who built what
 
-# 3. Run the frontend
-cd ../frontend
-npm install
-npm run dev
+## Architecture
 
-# 4. Open
-# - Swagger UI:      http://localhost:8080/swagger-ui.html
-# - Frontend:        http://localhost:5173
-# - Prometheus:      http://localhost:9090
-# - Grafana:         http://localhost:3000   (admin / admin)
-# - Kafdrop:         http://localhost:9000
-# - Actuator health: http://localhost:8080/actuator/health
+### Runtime architecture
+
+```mermaid
+graph TD
+    User[Ops Analyst] -->|HTTPS| FE[React + Vite<br/>nginx-alpine]
+    FE -->|/api/* proxy| BE[Spring Boot 3<br/>Java 25]
+    BE -->|JDBC| PG[(PostgreSQL 16<br/>+ Liquibase)]
+    BE -->|KafkaTemplate| K[Apache Kafka<br/>trade-events, recon-results,<br/>system-alerts, DLQ]
+    K -->|@KafkaListener| C1[ReconConsumer]
+    K -->|@KafkaListener| C2[AuditConsumer]
+    K -->|@KafkaListener| C3[AlertConsumer]
+    C1 --> PG
+    C2 --> PG
+    BE -->|/actuator/prometheus| PR[Prometheus]
+    PR --> GR[Grafana<br/>dashboards + alerts]
 ```
 
-### Default credentials (dev profile only, after you implement Day 5)
+### CI/CD + deploy flow
+
+```mermaid
+graph LR
+    DEV[Developer] -->|git push| GH[GitHub]
+    GH -->|trigger| CI[GitHub Actions:<br/>lint → test → coverage → docker]
+    CI -->|on main| GHCR[ghcr.io<br/>reconx-backend, reconx-frontend]
+    GHCR -->|docker compose pull| LAP[Demo Laptop]
+    LAP -->|docker compose up -d| STACK[7-service stack]
+```
+
+## Tech stack
+
+* **UI/Frontend:** React 19, Vite, TailwindCSS (served via nginx-alpine)
+* **Application/Backend:** Java 25, Spring Boot 3
+* **Data Layer:** PostgreSQL 16, Liquibase for database migrations
+* **Messaging:** Apache Kafka (4 dedicated topics)
+* **Observability:** Prometheus, Grafana dashboards, Micrometer metrics
+* **Testing:** JUnit 5, Testcontainers, k6 (load testing)
+
+## API documentation
+
+A live, interactive Swagger UI documentation for all endpoints is available directly on the running backend:
+- http://localhost:8080/swagger-ui.html (Locally)
+- `/api/swagger-ui.html` (Via frontend proxy)
+
+## Monitoring
+
+The system exposes metrics for Prometheus scraping, tracking live API hits, latency, database connection pools, and consumer lags. Check Grafana at http://localhost:3000 to observe live stats.
+
+![Baseline - idle stack, ~5 RPS, p95 ~50ms](docs/screenshots/grafana-baseline.png)
+
+![Under load - 200 VUs, 200-400 RPS, Kafka lag visible](docs/screenshots/grafana-under-load.png)
+
+![Recovery - 30s after k6 stops, Kafka lag drains to 0](docs/screenshots/grafana-recovery.png)
+
+## Kafka topics
+
+The event stream relies on 4 distinct Apache Kafka topics:
+1. `trade-events`: Raw stream of incoming trade creations and updates.
+2. `recon-results`: Published by the Reconciliation Engine upon detecting mismatches or successes.
+3. `system-alerts`: Broadcasted to operational users on major threshold breaches.
+4. `DLQ`: Dead Letter Queue for processing failures and poisonous messages.
+
+## Load test results
+
+Tested via `k6`, demonstrating sustained load capabilities:
+* **Target:** 200 Concurrent VUs
+* **RPS:** Maintained ~200-400 requests per second
+* **Latency:** p95 stayed well within the 800ms threshold
+* **Error Rate:** 0% error rate during normal operations
+
+## CI/CD pipeline
+
+Our GitHub Actions CI/CD Pipeline ensures stable builds:
+1. **Lint:** Validates style with Checkstyle (suppressed legacy errors).
+2. **Test:** JUnit 5 and Testcontainers execute full test suite.
+3. **Coverage:** JaCoCo verifies 85% line coverage and 70% branch coverage.
+4. **Docker:** Multi-stage Docker builds are performed.
+5. **GHCR:** Final optimized containers pushed to `ghcr.io`.
+
+## Deploy runbook
+
+The deployment process is incredibly straightforward for new joiners or demo setups. From a blank system:
+```bash
+echo $GHCR_PAT | docker login ghcr.io -u <user> --password-stdin
+docker compose pull
+docker compose up -d
+```
+
+## Default credentials
+
+*These credentials are valid only under the `dev` profile.*
 
 | Role          | Username        | Password     |
 |---------------|-----------------|--------------|
@@ -154,106 +124,13 @@ npm run dev
 | VIEWER        | `viewer@db.com` | `viewer123`  |
 | RECON_ANALYST | `recon@db.com`  | `recon123`   |
 
-JWT issued from `POST /api/auth/login` is valid for 60 minutes. Refresh tokens
-live in HttpOnly cookies for 7 days.
+## Troubleshooting
 
----
+* **Port Conflicts:** Ensure ports 8080 (backend), 5173 (frontend), 5432 (Postgres), 9090 (Prometheus), and 3000 (Grafana) are available before bringing up Docker Compose.
+* **GHCR Auth:** If you encounter `unauthorized`, double-check your GitHub Personal Access Token (PAT) has `read:packages` scope.
+* **Kafka Listener Config:** If local services can't reach Kafka, verify that `KAFKA_ADVERTISED_LISTENERS` matches the hostname of your Docker machine.
 
-## Deploy to the demo laptop (Day 10)
+## Team
 
-The deploy story is **GitHub Actions builds + pushes Docker images to GHCR;
-the demo laptop pulls them and runs the full stack via `docker compose up`.**
-No cloud hosting, no PaaS — the demo laptop *is* the deploy target.
-
-```bash
-# One-time on the demo laptop (uses a GitHub PAT with read:packages scope):
-echo "<your-PAT>" | docker login ghcr.io -u <gh-username> --password-stdin
-
-# Each deploy:
-docker compose pull        # fetches the latest CI-tested images from GHCR
-docker compose up -d       # brings up all 7 services
-```
-
-Full walkthrough: [`student-guides/day10/README.md`](./student-guides/day10/README.md).
-
----
-
-## How to read the TODOs in this codebase
-
-Every place you must write code has a comment block that looks like this:
-
-```java
-// ============================================================================
-// TICKET-ADV019 — Build EquityTrade with the Builder pattern
-//
-// WHAT:    A concrete EquityTrade record/class that extends Trade and is
-//          constructed via an immutable builder.
-// HOW:     Use a static inner Builder with fluent setters returning `this`;
-//          build() validates and returns an EquityTrade. Mark final fields.
-// WHY:     Builder pattern keeps the call-site readable for trades with 8+
-//          fields and gives us a single place to enforce invariants.
-// OBSERVE: A trade missing required fields throws IllegalStateException at
-//          build(), NOT at field-set time. Verify with the unit test in
-//          EquityTradeTest.builder_missingPrice_throws.
-// HINT:    See ../model/FXTrade.java for the same pattern applied to a
-//          two-currency trade.
-// ============================================================================
-```
-
-Below each block the method body is replaced with `// TODO(TICKET-IHxxx)` and
-either an `UnsupportedOperationException` or a minimal placeholder return.
-Your job is to remove the TODO and implement the body.
-
-The full ticket text, acceptance criteria, and step-by-step hints live in the
-matching day's README under [`./student-guides/`](./student-guides/README.md).
-
----
-
-## Daily flow
-
-| Day | Theme | New Tickets | Headline new-2026 topic |
-|----:|-------|-------------|--------------------------|
-| 0   | Introduction & onboarding | — | — |
-| 1   | PostgreSQL + Liquibase Deep Dive | ADV001–ADV017 | ★ Liquibase, ★ AI for ADR |
-| 2   | Java OOP + sealed classes + SOLID | ADV018–ADV032 | sealed-class trade hierarchy |
-| 3   | Functional Java + JUnit 5 + Testcontainers | ADV033–ADV047 | parallel recon with CompletableFuture |
-| 4   | Spring Boot enterprise setup | ADV048–ADV062 | multi-module Maven, Hibernate Envers, MapStruct |
-| 5   | REST + JWT + RBAC + Testcontainers tests | ADV063–ADV080 | API versioning |
-| 6   | Caching + Prometheus + Grafana | ADV081–ADV097 | ★ Observability deep dive |
-| 7   | HTML5 + CSS Grid + SSE feed + ARIA | ADV098–ADV110 | ★ live SSE trade feed |
-| 8   | JS ES6+ + React patterns (HOC, hooks, RHF) | ADV111–ADV125 (+ ADV127 stretch) | React performance profiling |
-| 9   | React Context + Kafka multi-topic + DLQ | ADV128–ADV145 | ★ Kafka deep dive, event sourcing |
-| 10  | Docker (7-svc) + GH Actions + load test + demo | ADV146–ADV165 | ★ Liquibase-in-CI, ★ AI in DevOps |
-
----
-
-## Branching
-
-Use **GitFlow**:
-
-```
-main      ← only release tags (v1.0.0 at end of Day 10)
-develop   ← integration branch — your team merges here
-feature/* ← one branch per ticket (e.g. feature/ADV019-equity-builder)
-```
-
-Open a Pull Request from each `feature/*` branch into `develop`. Two approvals
-required before merge (advanced track convention — Intermediate only required
-one).
-
----
-
-## Final demo (Day 10)
-
-A 20-minute end-to-end walkthrough:
-
-| Minutes | Content |
-|--------:|---------|
-| 3       | Problem statement + C4 architecture diagram |
-| 8       | Live demo: JWT login → post trade → Kafka event → auto-recon → resolve break → Grafana metric ticks |
-| 5       | Code walkthrough (one feature each team member is proud of) |
-| 4       | Q&A |
-
----
-
-## Good luck — and ask your instructors anything 🏦
+- **TDI 2026 Graduate Training Group**
+- Aarsh, Mona, Priyansh, and Pranshul

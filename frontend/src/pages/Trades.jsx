@@ -1,8 +1,9 @@
 // TICKET-ADV114 — Compound DataTable.
 // TICKET-ADV117 — useDebouncedSearch.
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { withAuth } from '@components/withAuth.jsx';
 import DataTable from '@components/DataTable.jsx';
+import { TradeRow } from '@components/TradeRow.jsx';
 import { useDebouncedSearch } from '@hooks/useDebouncedSearch.js';
 import { api } from '@services/apiService.js';
 
@@ -11,12 +12,26 @@ function Trades() {
   const debounced = useDebouncedSearch(search, 300);
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
+  const [_selectedId, setSelectedId] = useState(null);
+  void _selectedId;
 
-  // TODO(TICKET-ADV114 + ADV117): useEffect that:
-  //   - builds a query string from `page` and `debounced` (status filter)
-  //   - calls api.listTrades(params) and stores the response in `data`
-  //   - re-runs whenever `page` or `debounced` changes
-  //   - degrades gracefully on error (set empty page).
+  const handleSelect = useCallback((id) => setSelectedId(id), []);
+
+  React.useEffect(() => {
+    let active = true;
+    const params = new URLSearchParams({ page: page.toString(), size: '20' });
+    if (debounced) params.append('status', debounced);
+    
+    api.listTrades(params)
+      .then(res => {
+        if (active) setData(res);
+      })
+      .catch(() => {
+        if (active) setData({ items: [], totalPages: 0 });
+      });
+    
+    return () => { active = false; };
+  }, [page, debounced]);
 
   return (
     <section>
@@ -35,8 +50,10 @@ function Trades() {
           { key: 'price',    label: 'Price' },
           { key: 'status',   label: 'Status' },
         ]} />
-        {/* TODO(TICKET-ADV114): render a DataTable.Body with `rows={data.items}`
-            and a `render` prop that returns one <span> per column. */}
+        <DataTable.Body
+          rows={data.items}
+          render={(t) => <TradeRow key={t.id} trade={t} onClick={handleSelect} />}
+        />
         <DataTable.Pagination
           page={page}
           totalPages={Math.max(1, data.totalPages)}
