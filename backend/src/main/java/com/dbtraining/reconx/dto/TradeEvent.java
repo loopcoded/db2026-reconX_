@@ -1,5 +1,7 @@
 package com.dbtraining.reconx.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -28,5 +30,18 @@ public record TradeEvent(
 ) {
     public enum EventType {
         TRADE_CREATED, TRADE_UPDATED, TRADE_CANCELLED
+    }
+
+    /** Convenience factory for tests and producers. */
+    public static TradeEvent created(String tradeRef, JsonNode afterPayload) {
+        return new TradeEvent(
+                UUID.randomUUID(),
+                tradeRef,
+                EventType.TRADE_CREATED,
+                Instant.now(),
+                "system",
+                null,
+                afterPayload.toString()
+        );
     }
 }
