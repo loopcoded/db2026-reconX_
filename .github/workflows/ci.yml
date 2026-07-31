@@ -40,6 +40,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      - name: Build + install audit starter
+        working-directory: backend/recon-audit-starter
+        run: ../mvnw -B install -DskipTests
       - name: Liquibase validate
         working-directory: backend
         run: ./mvnw -B liquibase:validate || true
