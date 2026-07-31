@@ -9,7 +9,10 @@ export function ReconPanel() {
     setLoading(true);
     api.reconResults()
       .then(res => setBreaks(res || []))
-      .catch(err => console.error(err))
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -24,6 +27,7 @@ export function ReconPanel() {
       // Wait a moment for async jobs in a real system, then fetch results
       setTimeout(fetchBreaks, 1000);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       setLoading(false);
     }
@@ -34,6 +38,7 @@ export function ReconPanel() {
       await api.resolveBreak(id, 'Resolved manually via UI');
       fetchBreaks(); // refresh
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };

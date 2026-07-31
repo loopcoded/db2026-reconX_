@@ -19,7 +19,10 @@ function Trades() {
     setSelectedId(trade.tradeRef);
     api.audit(trade.tradeRef)
       .then(res => setAuditLog(res || []))
-      .catch(err => console.error(err));
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
   }, []);
 
   React.useEffect(() => {

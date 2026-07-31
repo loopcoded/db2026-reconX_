@@ -21,7 +21,10 @@ export function useTradeStream(url = '/api/v1/trades/stream') {
           setTrades(data.items);
         }
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
 
     const sseUrl = new URL(url, window.location.origin);
     sseUrl.searchParams.append('token', user.token);
