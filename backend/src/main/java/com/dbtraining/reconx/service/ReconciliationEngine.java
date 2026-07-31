@@ -80,8 +80,6 @@ public class ReconciliationEngine {
         });
     }
 
-
-
     /**
      * TICKET-ADV037
      * Parallel reconciliation by counterparty
