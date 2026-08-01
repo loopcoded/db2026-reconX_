@@ -22,18 +22,6 @@ import java.sql.Statement;
  * OBSERVE: GET /api/actuator/health/database -> `{"status":"UP",
  *          "details":{"latencyMs": <number>}}`.
  * ============================================================================
- *
- *  TODO(TICKET-ADV059):
- *    long start = System.nanoTime();
- *    try (Connection c = ds.getConnection(); Statement s = c.createStatement()) {
- *        s.setQueryTimeout(2);
- *        s.execute("SELECT 1");
- *        builder.up().withDetail("latencyMs", (System.nanoTime() - start) / 1_000_000);
- *    }
- *
- *  HINT: Throw any exception out of this method — AbstractHealthIndicator
- *        converts it to DOWN with the exception class as a detail.
- * ============================================================================
  */
 @Component("reconxDatabase")
 public class DatabaseHealthIndicator extends AbstractHealthIndicator {

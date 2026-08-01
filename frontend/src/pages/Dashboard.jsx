@@ -18,6 +18,8 @@ function onRender(id, phase, actualDuration, baseDuration) {
   console.log(`[Profiler] ${id} ${phase}  actual=${actualDuration.toFixed(2)}ms  base=${baseDuration.toFixed(2)}ms`);
 }
 
+import { ReconPanel } from '@components/ReconPanel.jsx';
+
 function DashboardContents() {
   const { trades, isConnected } = useTradeStream();
 
@@ -41,6 +43,8 @@ function DashboardContents() {
       <div role="status" aria-live="polite">
         SSE: {isConnected ? 'connected' : 'disconnected'}
       </div>
+      
+      <ReconPanel />
     </section>
   );
 }

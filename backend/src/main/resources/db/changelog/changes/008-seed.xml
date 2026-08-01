@@ -62,21 +62,25 @@
             <column name="email" value="admin@db.com"/>
             <column name="password_hash" value="$2y$10$L9iP3BfsBS2LbVJRfc86TuWnJvP.AohjX3PNLwdtjlZfyB7YSp87C"/>
             <column name="role" value="ADMIN"/>
+            <column name="enabled" valueBoolean="true"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="trader@db.com"/>
             <column name="password_hash" value="$2y$10$LIpkayi0QDWyVguPtEQbkOATM7PTnMKFDNq47K92TUx2LHTBFQf1i"/>
             <column name="role" value="TRADER"/>
+            <column name="enabled" valueBoolean="true"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="viewer@db.com"/>
             <column name="password_hash" value="$2y$10$gC8J5Tzr15p4V6BgbbEFGOEb4VWM4YUOAdKEeyFlXtEvYolYblCVC"/>
             <column name="role" value="VIEWER"/>
+            <column name="enabled" valueBoolean="true"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="recon@db.com"/>
             <column name="password_hash" value="$2y$10$UVYhlvPX38zSdPhY6bz4ee453bh6gXp9guhAfV5IU2SjcWPm0eWKq"/>
             <column name="role" value="RECON_ANALYST"/>
+            <column name="enabled" valueBoolean="true"/>
         </insert>
         <rollback>
             <sql>DELETE FROM users;</sql>
@@ -84,6 +88,9 @@
     </changeSet>
 
     <changeSet id="008-seed-generated-trades" author="Pranshult25" context="dev,test">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql splitStatements="false"><![CDATA[
             INSERT INTO instruments (symbol, name, asset_class, currency, isin, metadata)
             SELECT

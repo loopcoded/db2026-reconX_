@@ -3,13 +3,13 @@ import React from 'react';
 
 function TradeRowImpl({ trade, onClick }) {
   return (
-    <div className="trade-row-impl" onClick={onClick}>
-      <span>{trade.tradeRef}</span>
-      <span>{trade.symbol}</span>
-      <span>{trade.qty}</span>
-      <span>{trade.price}</span>
-      <span className={`status-pill status-${trade.status?.toLowerCase()}`}>{trade.status}</span>
-    </div>
+    <>
+      <span onClick={onClick} style={{cursor: 'pointer'}}>{trade.tradeRef}</span>
+      <span onClick={onClick} style={{cursor: 'pointer'}}>{trade.instrumentSymbol}</span>
+      <span onClick={onClick} style={{cursor: 'pointer'}}>{trade.quantity}</span>
+      <span onClick={onClick} style={{cursor: 'pointer'}}>{trade.price}</span>
+      <span onClick={onClick} style={{cursor: 'pointer'}} className={`status-pill status-${trade.status?.toLowerCase()}`}>{trade.status}</span>
+    </>
   );
 }
 

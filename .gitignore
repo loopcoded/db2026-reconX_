@@ -1,0 +1,5 @@
+/kafka/
+kafka.tgz
+create_scenario.ps1
+frontend/node_modules/
+backend/target/

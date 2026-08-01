@@ -13,9 +13,17 @@ function Trades() {
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
   const [_selectedId, setSelectedId] = useState(null);
-  void _selectedId;
+  const [auditLog, setAuditLog] = useState([]);
 
-  const handleSelect = useCallback((id) => setSelectedId(id), []);
+  const handleSelect = useCallback((trade) => {
+    setSelectedId(trade.tradeRef);
+    api.audit(trade.tradeRef)
+      .then(res => setAuditLog(res || []))
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -52,7 +60,7 @@ function Trades() {
         ]} />
         <DataTable.Body
           rows={data.items}
-          render={(t) => <TradeRow key={t.id} trade={t} onClick={handleSelect} />}
+          render={(t) => <TradeRow key={t.id} trade={t} onClick={() => handleSelect(t)} />}
         />
         <DataTable.Pagination
           page={page}
@@ -60,6 +68,23 @@ function Trades() {
           onChange={setPage}
         />
       </DataTable>
+
+      {_selectedId && (
+        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid #ccc' }}>
+          <h3>Audit Log for {_selectedId}</h3>
+          {auditLog.length === 0 ? (
+            <p>No events found.</p>
+          ) : (
+            <ul>
+              {auditLog.map(evt => (
+                <li key={evt.id}>
+                  <strong>{new Date(evt.eventTimestamp).toLocaleString()}</strong> - {evt.eventType} - {evt.payload}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </section>
   );
 }

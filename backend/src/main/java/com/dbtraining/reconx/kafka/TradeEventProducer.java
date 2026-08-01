@@ -27,6 +27,9 @@ public class TradeEventProducer {
 
     private final KafkaTemplate<String, TradeEvent> template;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.dbtraining.reconx.service.TradeStreamService streamService;
+
     public TradeEventProducer(KafkaTemplate<String, TradeEvent> template) {
         this.template = template;
     }
@@ -34,6 +37,13 @@ public class TradeEventProducer {
     public void publish(TradeEvent event) {
         log.debug("Publishing TradeEvent eventId={} ref={} type={}",
                 event.eventId(), event.tradeRef(), event.eventType());
-        template.send(TOPIC, event.tradeRef(), event);
+        try {
+            template.send(TOPIC, event.tradeRef(), event);
+        } catch (Exception e) {
+            log.warn("Failed to publish TradeEvent to Kafka, falling back to local stream. Error: {}", e.getMessage());
+            if (streamService != null) {
+                streamService.onTradeEvent(event);
+            }
+        }
     }
 }

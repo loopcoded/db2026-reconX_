@@ -38,6 +38,14 @@ vi.mock('@hooks/useTradeStream.js', () => ({
   useTradeStream: vi.fn()
 }));
 
+vi.mock('@services/apiService.js', () => ({
+  api: {
+    reconResults: vi.fn().mockResolvedValue([]),
+    runRecon: vi.fn().mockResolvedValue({}),
+    resolveBreak: vi.fn().mockResolvedValue({})
+  }
+}));
+
 describe('<Dashboard />', () => {
   it('shows summary cards', () => {
     // Mock the hook return value

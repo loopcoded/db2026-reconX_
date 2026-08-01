@@ -40,10 +40,18 @@ public class TradeController {
 
     private final TradeService service;
     private final TradeMapper mapper;
+    private final com.dbtraining.reconx.service.TradeStreamService streamService;
 
-    public TradeController(TradeService service, TradeMapper mapper) {
+    public TradeController(TradeService service, TradeMapper mapper, com.dbtraining.reconx.service.TradeStreamService streamService) {
         this.service = service;
         this.mapper = mapper;
+        this.streamService = streamService;
+    }
+
+    @GetMapping(value = "/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "Subscribe to live trades stream")
+    public org.springframework.web.servlet.mvc.method.annotation.SseEmitter stream() {
+        return streamService.subscribe();
     }
 
     @GetMapping

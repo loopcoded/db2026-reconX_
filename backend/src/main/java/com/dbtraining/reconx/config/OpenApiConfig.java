@@ -21,28 +21,6 @@ import org.springdoc.core.models.GroupedOpenApi;
  * OBSERVE: After wiring, the title in the top-left of Swagger UI is
  *          "ReconX API" and a green "Authorize" button accepts bearer JWTs.
  * ============================================================================
- *
- *  TODO(TICKET-ADV058):
- *    @Bean
- *    public OpenAPI reconxOpenAPI() {
- *        return new OpenAPI()
- *            .info(new Info()
- *                .title("ReconX API")
- *                .version("v1")
- *                .description("Enterprise Trade Reconciliation Platform (Advanced Track)")
- *                .contact(new Contact().name("DB TDI Training").email("tdi@db.com")))
- *            .components(new Components().addSecuritySchemes("bearerAuth",
- *                new SecurityScheme()
- *                    .type(SecurityScheme.Type.HTTP)
- *                    .scheme("bearer")
- *                    .bearerFormat("JWT")))
- *            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
- *    }
- *
- *  HINT: Without this bean Springdoc still produces a default OpenAPI doc —
- *        you'll see Swagger UI work, but with generic metadata and no
- *        "Authorize" button.
- * ============================================================================
  */
 
 

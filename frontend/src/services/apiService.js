@@ -1,163 +1,64 @@
-// TICKET-ADV112-related — fetch wrapper that attaches Bearer JWT from localStorage.
-
+// TICKET-ADV112-related — fetch wrapper that attaches Bearer JWT from sessionStorage.
 const BASE = '/api';
 
 function authHeaders() {
-  const token = localStorage.getItem('jwt');
-
-  return token
-    ? { Authorization: `Bearer ${token}` }
-    : {};
+  const token = sessionStorage.getItem('reconx-token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-
 async function request(method, path, body) {
-
-  const headers = {
-    ...authHeaders()
-  };
-
-  if (body) {
-    headers['Content-Type'] = 'application/json';
-  }
-
+  const headers = { ...authHeaders() };
+  if (body) headers['Content-Type'] = 'application/json';
+  
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined
   });
-
-
+  
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      sessionStorage.removeItem('reconx-token');
+      sessionStorage.removeItem('reconx-role');
+      window.location.href = '/login';
+    }
     throw new Error(`HTTP ${res.status}`);
   }
-
-
-  if (res.status === 204) {
-    return null;
-  }
-
-
+  if (res.status === 204) return null;
   return await res.json();
 }
 
-
-
 export const api = {
-
-  // TICKET-ADV072
-  // POST /api/auth/login
-  // Request:
-  // {
-  //    email,
-  //    password
-  // }
-  //
-  // Response:
-  // {
-  //    token,
-  //    role
-  // }
-  login: async (email, password) => {
-
-    return request(
-      'POST',
-      '/auth/login',
-      {
-        email,
-        password
-      }
-    );
-
+  login: (email, password)   => {
+    return request('POST', '/auth/login', { email, password });
   },
-
-
-  // TICKET-ADV063
-  // GET /api/v1/trades
-  listTrades: (params = '') => {
-
-    return request(
-      'GET',
-      `/v1/trades${params ? `?${params}` : ''}`
-    );
-
+  listTrades: (params = '')  => {
+    // We will just use standard fetch or assuming request works
+    return request('GET', `/v1/trades?${params}`);
   },
-
-
-  // TICKET-ADV123
-  // POST /api/v1/trades
-  createTrade: (req) => {
-
-    return request(
-      'POST',
-      '/v1/trades',
-      req
-    );
-
+  createTrade: (req)         => {
+    return request('POST', '/v1/trades', req);
   },
-
-
-  // TICKET-ADV066
-  // PATCH /api/v1/trades/{id}/status
   updateStatus: (id, status) => {
-
-    return request(
-      'PATCH',
-      `/v1/trades/${id}/status`,
-      {
-        status
-      }
-    );
-
+    return request('PATCH', `/v1/trades/${id}/status`, { status });
   },
-
-
-  // TICKET-ADV067
-  // DELETE /api/v1/trades/{id}
-  deleteTrade: (id) => {
-
-    return request(
-      'DELETE',
-      `/v1/trades/${id}`
-    );
-
+  deleteTrade: (id)          => {
+    return request('DELETE', `/v1/trades/${id}`);
   },
-
-
-  // TICKET-ADV121
-  // POST /api/v1/recon/run
-  runRecon: (req) => {
-
-    return request(
-      'POST',
-      '/v1/recon/run',
-      req
-    );
-
+  runRecon: () => {
+    return request('POST', '/v1/recon/run', {
+      from: '2026-01-01',
+      to: '2026-12-31'
+    });
   },
-
-
-  // TICKET-ADV121
-  // GET /api/v1/recon/jobs/{jobId}/results
   reconResults: (jobId) => {
-
-    return request(
-      'GET',
-      `/v1/recon/jobs/${jobId}/results`
-    );
-
+    // The backend uses a mock jobId if none is provided, or ignores it to return all breaks
+    return request('GET', `/v1/recon/jobs/${jobId || 'dummy'}/results`);
   },
-
-
-  // TICKET-ADV121
-  // GET /api/v1/audit/trades/{tradeRef}
   audit: (tradeRef) => {
-
-    return request(
-      'GET',
-      `/v1/audit/trades/${tradeRef}`
-    );
-
+    return request('GET', `/v1/audit/trades/${tradeRef}`);
+  },
+  resolveBreak: (id, note) => {
+    return request('PUT', `/v1/recon/results/${id}/resolve`, { note });
   }
-
 };
