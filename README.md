@@ -133,4 +133,4 @@ docker compose up -d
 ## Team
 
 - **TDI 2026 Graduate Training Group**
-- Aarsh, Mona, Priyansh, and Pranshul
+- Sejal, Aarsh, Mona, Pranshul, and Priyansh
