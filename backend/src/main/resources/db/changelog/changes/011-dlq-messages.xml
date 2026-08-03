@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="011-create-dlq-messages" author="chatgpt">
+
+        <createTable tableName="dlq_messages">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+
+            <column name="event_id" type="UUID"/>
+
+            <column name="trade_ref" type="VARCHAR(255)"/>
+
+            <column name="original_topic" type="VARCHAR(255)"/>
+
+            <column name="partition" type="INT"/>
+
+            <column name="offset" type="BIGINT"/>
+
+            <column name="payload" type="TEXT"/>
+
+            <column name="reason" type="TEXT"/>
+
+            <column name="first_seen" type="TIMESTAMP"/>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
